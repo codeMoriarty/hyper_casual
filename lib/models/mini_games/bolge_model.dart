@@ -1,14 +1,14 @@
-// 5 Pazar Bölgesinden  her birinin anlık durumunu tutan model
+// 5 Pazar Bölgesinden her birinin anlık durumunu tutan model
 class MiniGameBolge {
   final String id;
   final String ad;
   double yanginSeviyesi;
   final List<String> komsular;
-  final double
-      bolgeCarpan; // Ahşap için 1.3 [cite: 354], Demirci için 0.5 [cite: 356]
+  final double bolgeCarpan; // Ahşap için 1.3, Demirci için 0.5
   final String ozelKural;
-  final int kritiklik; // 1-4 (yıldız sayısı) [cite: 216, 235, 255, 271, 289]
-  bool mudaleEdilmedi = false; // Tehlike çarpanı için
+  final int kritiklik; // 1-4 (yıldız sayısı)
+  bool
+      mudaleEdilmedi; // Tehlike çarpanı için (DÜZELTME 1: = false buradan kaldırıldı)
 
   MiniGameBolge({
     required this.id,
@@ -18,6 +18,7 @@ class MiniGameBolge {
     required this.bolgeCarpan,
     required this.ozelKural,
     required this.kritiklik,
+    this.mudaleEdilmedi = false, // DÜZELTME 2: Parametre buraya eklendi
   });
 
   // Durumu kopyalamak için
@@ -33,6 +34,7 @@ class MiniGameBolge {
       bolgeCarpan: bolgeCarpan,
       ozelKural: ozelKural,
       kritiklik: kritiklik,
+      // Bu satır artık hata vermeyecek
       mudaleEdilmedi: mudaleEdilmedi ?? this.mudaleEdilmedi,
     );
   }

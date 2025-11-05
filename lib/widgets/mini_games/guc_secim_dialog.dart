@@ -20,7 +20,7 @@ class GucSecimDialog extends StatelessWidget {
     // Mini oyun provider'ını bul, ama dinleme (sadece fonksiyon çağırmak için)
     final provider = context.read<PazarYanginiProvider>();
 
-    // GDD'deki  gibi bir arayüz oluşturalım
+    // GDD'deki gibi bir arayüz oluşturalım
     return AlertDialog(
       backgroundColor: Colors.grey.shade900,
       title: Text(bolge.ad),
@@ -51,12 +51,12 @@ class GucSecimDialog extends StatelessWidget {
               tip: GucTipi.golge,
               icon: Icons.nightlight_round,
               renk: Colors.purple.shade300,
-              basariSansi: '100%', // [cite: 394]
-              maliyet: '${provider.GOLGE_MALIYETI} Gölge Gücü', // [cite: 394]
-              etki: 'Tam Söndürme (Max 200)', // [cite: 408]
-              yanEtki: 'Diplomasi -10 (İlk 2)', // [cite: 417]
+              basariSansi: '${provider.golgeBasariSansi}%', // DÜZELTİLDİ
+              maliyet: '${provider.golgeMaliyeti} Gölge Gücü', // DÜZELTİLDİ
+              etki: 'Tam Söndürme (Max 200)',
+              yanEtki: 'Diplomasi -10 (İlk 2)',
               mevcutKaynak: provider.miniGameGolgeGucu,
-              gerekliKaynak: provider.GOLGE_MALIYETI.toDouble(),
+              gerekliKaynak: provider.golgeMaliyeti.toDouble(), // DÜZELTİLDİ
             ),
             _buildGucSecimi(
               context: context,
@@ -64,12 +64,12 @@ class GucSecimDialog extends StatelessWidget {
               tip: GucTipi.ordu,
               icon: Icons.shield,
               renk: Colors.red.shade300,
-              basariSansi: '${provider.ORDU_BASARI_SANSI}%', // [cite: 453]
-              maliyet: '${provider.ORDU_MALIYETI} Hazine', // [cite: 453]
+              basariSansi: '${provider.orduBasariSansi}%', // DÜZELTİLDİ
+              maliyet: '${provider.orduMaliyeti} Hazine', // DÜZELTİLDİ
               etki: 'Orta-Yüksek Söndürme',
-              yanEtki: 'Ordu -5 (2. ve 3.)', // [cite: 487, 488]
+              yanEtki: 'Ordu -5 (2. ve 3.)',
               mevcutKaynak: anaStats.hazine.toDouble(),
-              gerekliKaynak: provider.ORDU_MALIYETI.toDouble(),
+              gerekliKaynak: provider.orduMaliyeti.toDouble(), // DÜZELTİLDİ
             ),
             _buildGucSecimi(
               context: context,
@@ -77,12 +77,12 @@ class GucSecimDialog extends StatelessWidget {
               tip: GucTipi.halk,
               icon: Icons.people,
               renk: Colors.blue.shade300,
-              basariSansi: '${provider.HALK_BASARI_SANSI}%', // [cite: 522]
-              maliyet: 'ÜCRETSİZ', // [cite: 522]
+              basariSansi: '${provider.halkBasariSansi}%', // DÜZELTİLDİ
+              maliyet: 'ÜCRETSİZ',
               etki: 'Düşük Söndürme',
-              yanEtki: 'Halk+5, Ordu+5 (Her 2)', // [cite: 523]
+              yanEtki: 'Halk+5, Ordu+5 (Her 2)',
               mevcutKaynak: anaStats.halk.toDouble(),
-              gerekliKaynak: provider.HALK_GEREKLI_STAT.toDouble(),
+              gerekliKaynak: provider.halkGerekliStat.toDouble(), // DÜZELTİLDİ
             ),
             _buildGucSecimi(
               context: context,
@@ -90,12 +90,12 @@ class GucSecimDialog extends StatelessWidget {
               tip: GucTipi.buyucu,
               icon: Icons.auto_awesome,
               renk: Colors.cyan.shade300,
-              basariSansi: '${provider.BUYUCU_BASARI_SANSI}%', // [cite: 579]
-              maliyet: '${provider.BUYUCU_MALIYETI} Hazine', // [cite: 579]
+              basariSansi: '${provider.buyucuBasariSansi}%', // DÜZELTİLDİ
+              maliyet: '${provider.buyucuMaliyeti} Hazine', // DÜZELTİLDİ
               etki: 'Çok Yüksek Söndürme',
-              yanEtki: 'Din+10, Diplomasi-5', // [cite: 595]
+              yanEtki: 'Din+10, Diplomasi-5',
               mevcutKaynak: anaStats.hazine.toDouble(),
-              gerekliKaynak: provider.BUYUCU_MALIYETI.toDouble(),
+              gerekliKaynak: provider.buyucuMaliyeti.toDouble(), // DÜZELTİLDİ
             ),
             const Divider(height: 10),
             _buildGucSecimi(
@@ -107,7 +107,7 @@ class GucSecimDialog extends StatelessWidget {
               basariSansi: '0%',
               maliyet: 'ÜCRETSİZ',
               etki: 'Yangın Artacak!',
-              yanEtki: 'Tehlike Çarpanı artabilir', // [cite: 360, 361]
+              yanEtki: 'Tehlike Çarpanı artabilir',
               mevcutKaynak: 1,
               gerekliKaynak: 0,
             ),
@@ -130,7 +130,7 @@ class GucSecimDialog extends StatelessWidget {
     required double mevcutKaynak,
     required double gerekliKaynak,
   }) {
-    // GDD'ye göre [cite: 90, 42, 461] kaynak kontrolü
+    // GDD'ye göre kaynak kontrolü
     final bool kullanilabilir = mevcutKaynak >= gerekliKaynak;
 
     return Padding(

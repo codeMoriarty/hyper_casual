@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hyper_casual/models/game_stats.dart';
+// import 'package:hyper_casual/models/game_stats.dart'; // <-- HATA BU SATIRDAYDI, SİLİNDİ
 import 'package:hyper_casual/models/mini_games/bolge_model.dart';
 import 'package:hyper_casual/models/mini_games/guc_secimi_model.dart';
 import 'package:hyper_casual/providers/game_provider.dart';
@@ -15,7 +15,9 @@ class BolgeKartWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Ana statları al (Hazine, Ordu vb. için)
-    final anaStats = context.watch<GameProvider>().stats;
+    // DÜZELTME: anaStats 'watch' yerine 'read' ile alınmalı,
+    // çünkü sadece 'onTap' içinde kullanılıyor.
+    final anaStats = context.read<GameProvider>().stats;
     // Mini oyun provider'ını al (seçimi görmek için)
     final miniGameProvider = context.watch<PazarYanginiProvider>();
 
@@ -58,6 +60,7 @@ class BolgeKartWidget extends StatelessWidget {
                     value: context.read<PazarYanginiProvider>(),
                   ),
                   Provider.value(
+                    // anaStats'ı 'read' ile aldığımız için burada tekrar okuyoruz
                     value: context.read<GameProvider>().stats,
                   ),
                 ],

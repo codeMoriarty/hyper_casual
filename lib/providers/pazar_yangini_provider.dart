@@ -3,7 +3,7 @@ import 'package:hyper_casual/models/game_stats.dart';
 import 'package:hyper_casual/models/mini_games/bolge_model.dart';
 import 'package:hyper_casual/models/mini_games/zorluk_model.dart';
 import 'package:hyper_casual/models/mini_games/guc_secimi_model.dart';
-import 'dart.math';
+import 'dart:math'; // HATA 1: dart.math -> dart:math olarak düzeltildi
 
 // Mini oyunun sonucunu tanımlayan bir enum
 enum MiniGameSonucTipi { tamBasari, kismiBasari, basarisizlik, felaket }
@@ -29,7 +29,7 @@ class PazarYanginiProvider extends ChangeNotifier {
   int _mevcutTur = 1;
   Map<String, MiniGameBolge> _bolgeler = {};
   double _miniGameGolgeGucu = 0;
-  final Random _random = Random();
+  final Random _random = Random(); // HATA 2 & 3: Artık 'Random' tanınıyor
 
   Map<String, GucTipi> _secimler = {};
   final Map<GucTipi, int> _kullanimSayaclari = {
@@ -53,24 +53,24 @@ class PazarYanginiProvider extends ChangeNotifier {
       _bolgeler.values.fold(0.0, (prev, e) => prev + e.yanginSeviyesi);
   Map<String, GucTipi> get secimler => _secimler;
 
-  // --- GDD SABİTLERİ  ---
+  // --- GDD SABİTLERİ (HATA 12-23: lowerCamelCase olarak düzeltildi) ---
   // Maliyetler
-  final int GOLGE_MALIYETI = 50; // [cite: 394]
-  final int ORDU_MALIYETI = 200; // [cite: 453]
-  final int BUYUCU_MALIYETI = 400; // [cite: 579]
-  final int HALK_GEREKLI_STAT = 30; // [cite: 42]
+  final int golgeMaliyeti = 50;
+  final int orduMaliyeti = 200;
+  final int buyucuMaliyeti = 400;
+  final int halkGerekliStat = 30;
 
   // Başarı Şansları
-  final int GOLGE_BASARI_SANSI = 100; // [cite: 394]
-  final int ORDU_BASARI_SANSI = 90; // [cite: 453]
-  final int HALK_BASARI_SANSI = 70; // [cite: 522]
-  final int BUYUCU_BASARI_SANSI = 95; // [cite: 579]
+  final int golgeBasariSansi = 100;
+  final int orduBasariSansi = 90;
+  final int halkBasariSansi = 70;
+  final int buyucuBasariSansi = 95;
 
   // Diğer
-  final double BASARISIZLIK_CARPANI = 0.4; // [cite: 482, 540]
-  final double KOMSU_YAYILMA_MIKTARI = 10.0; // [cite: 315]
-  final double PAZAR_YAYILMA_MIKTARI = 10.0; // [cite: 224]
-  final double YAYILMA_ESIGI = 50.0; // [cite: 314]
+  final double basarisizlikCarpani = 0.4;
+  final double komsuYayilmaMiktari = 10.0;
+  final double pazarYayilmaMiktari = 10.0;
+  final double yayilmaEsigi = 50.0;
 
   // --- VERİTABANLARI (GDD'den) ---
   static final Map<String, MiniGameZorluk> _zorlukListesi = {
@@ -80,28 +80,28 @@ class PazarYanginiProvider extends ChangeNotifier {
         turSayisi: 4,
         temelArtis: 12.0,
         tamBasariHedef: 60,
-        kismiBasariHedef: 140), // [cite: 191]
+        kismiBasariHedef: 140),
     'Normal': MiniGameZorluk(
         ad: 'Normal',
         baslangicYangin: 500,
         turSayisi: 3,
         temelArtis: 18.0,
         tamBasariHedef: 90,
-        kismiBasariHedef: 180), // 
+        kismiBasariHedef: 180),
     'Zor': MiniGameZorluk(
         ad: 'Zor',
         baslangicYangin: 600,
         turSayisi: 3,
         temelArtis: 24.0,
         tamBasariHedef: 120,
-        kismiBasariHedef: 220), // [cite: 193]
+        kismiBasariHedef: 220),
     'CokZor': MiniGameZorluk(
         ad: 'Çok Zor',
         baslangicYangin: 700,
         turSayisi: 3,
         temelArtis: 30.0,
         tamBasariHedef: 150,
-        kismiBasariHedef: 260), // [cite: 195]
+        kismiBasariHedef: 260),
   };
 
   Map<String, MiniGameBolge> _getBaslangicBolgeler() => {
@@ -111,16 +111,16 @@ class PazarYanginiProvider extends ChangeNotifier {
             yanginSeviyesi: 120,
             komsular: ['2', '3'],
             bolgeCarpan: 1.0,
-            ozelKural: 'Sönmezse tüm bölgelere +10 yayılır!', // [cite: 224]
-            kritiklik: 3), // [cite: 216]
+            ozelKural: 'Sönmezse tüm bölgelere +10 yayılır!',
+            kritiklik: 3),
         '2': MiniGameBolge(
             id: '2',
             ad: 'Ahşap Dükkanlar',
             yanginSeviyesi: 100,
             komsular: ['1', '4'],
-            bolgeCarpan: 1.3, // [cite: 354]
-            ozelKural: 'Yangın artış hızı +30% daha fazla!', // [cite: 243]
-            kritiklik: 2), // [cite: 235]
+            bolgeCarpan: 1.3,
+            ozelKural: 'Yangın artış hızı +30% daha fazla!',
+            kritiklik: 2),
         '3': MiniGameBolge(
             id: '3',
             ad: 'Kumaş Hanı',
@@ -128,23 +128,23 @@ class PazarYanginiProvider extends ChangeNotifier {
             komsular: ['1', '5'],
             bolgeCarpan: 1.0,
             ozelKural: 'Normal yayılma',
-            kritiklik: 1), // [cite: 255]
+            kritiklik: 1),
         '4': MiniGameBolge(
             id: '4',
             ad: 'Demirci Sokağı',
             yanginSeviyesi: 60,
             komsular: ['2', '5'],
-            bolgeCarpan: 0.5, // [cite: 356]
-            ozelKural: '+50% direnç! Yavaş yanar.', // [cite: 276]
-            kritiklik: 0), // [cite: 271]
+            bolgeCarpan: 0.5,
+            ozelKural: '+50% direnç! Yavaş yanar.',
+            kritiklik: 0),
         '5': MiniGameBolge(
             id: '5',
             ad: 'Eski Tapınak',
             yanginSeviyesi: 140,
             komsular: ['3', '4'],
             bolgeCarpan: 1.0,
-            ozelKural: 'Yanarsa: Halk -20, Din -15, Gölge +10', // [cite: 296, 297, 298]
-            kritiklik: 4), // [cite: 289]
+            ozelKural: 'Yanarsa: Halk -20, Din -15, Gölge +10',
+            kritiklik: 4),
       };
 
   // --- ANA FONKSİYONLAR ---
@@ -158,9 +158,9 @@ class PazarYanginiProvider extends ChangeNotifier {
     double oyuncuGucu = (anaStats.halk +
             anaStats.bekciler +
             (anaStats.hazine / 100) +
-            anaStats.golge + // Büyücü [cite: 181]
+            anaStats.golge + // Büyücü
             anaStats.teknoloji) /
-        5; // [cite: 176]
+        5;
 
     if (oyuncuGucu <= 30) {
       _zorluk = _zorlukListesi['Kolay']!;
@@ -173,16 +173,15 @@ class PazarYanginiProvider extends ChangeNotifier {
     }
 
     _bolgeler = _getBaslangicBolgeler();
-    double baslangicYanginFarki =
-        (_zorluk.baslangicYangin - 500.0) / 5.0; 
+    double baslangicYanginFarki = (_zorluk.baslangicYangin - 500.0) / 5.0;
     _bolgeler.forEach((key, bolge) {
       bolge.yanginSeviyesi = (bolge.yanginSeviyesi + baslangicYanginFarki)
           .clamp(0, double.infinity);
     });
 
-    _miniGameGolgeGucu = (anaStats.golgeDeposu * 10).toDouble(); // [cite: 134]
+    _miniGameGolgeGucu = (anaStats.golgeDeposu * 10).toDouble();
     if (anaStats.golgeDeposu >= 100) {
-      _miniGameGolgeGucu = double.infinity; // [cite: 139]
+      _miniGameGolgeGucu = double.infinity;
     }
 
     notifyListeners();
@@ -201,12 +200,10 @@ class PazarYanginiProvider extends ChangeNotifier {
     Map<String, double> sondurmeEtkileri = {};
     Map<String, double> artisEtkileri = {};
     Map<String, double> yayilmaEtkileri = {};
-    List<String> hikayeLoglari = [];
+    // HATA 11: 'hikayeLoglari' kaldırıldı (unused)
 
-    double teknolojiBonusu =
-        turBasiStatlari.teknoloji * 0.20; // [cite: 627]
-    double ruzgarFaktoru =
-        _random.nextDouble() * (1.15 - 0.85) + 0.85; // [cite: 344]
+    double teknolojiBonusu = turBasiStatlari.teknoloji * 0.20;
+    double ruzgarFaktoru = _random.nextDouble() * (1.15 - 0.85) + 0.85;
 
     // --- 1. SÖNDÜRME ve YAN ETKİ HESAPLAMA ---
     _bolgeler.forEach((bolgeId, bolge) {
@@ -220,38 +217,50 @@ class PazarYanginiProvider extends ChangeNotifier {
 
       switch (guc) {
         case GucTipi.golge:
-          // Söndürme [cite: 408]
+          // Söndürme (HATA 4: min artık tanınıyor)
           sondurmeMiktari = min(200, bolge.yanginSeviyesi * 1.0);
-          _miniGameGolgeGucu -= GOLGE_MALIYETI;
-          // Yan Etki [cite: 415-421]
+          _miniGameGolgeGucu -= golgeMaliyeti; // lowerCamelCase
+          // Yan Etki
           turBasiStatlari = turBasiStatlari.copyWith(
             golgeDeposu: turBasiStatlari.golgeDeposu + 5,
-            halk: (kullanim <= 2) ? turBasiStatlari.halk + 5 : turBasiStatlari.halk,
-            bekciler: (kullanim <= 2) ? turBasiStatlari.bekciler + 5 : turBasiStatlari.bekciler,
-            diplomasi: (kullanim <= 2) ? turBasiStatlari.diplomasi - 10 : turBasiStatlari.diplomasi,
+            halk: (kullanim <= 2)
+                ? turBasiStatlari.halk + 5
+                : turBasiStatlari.halk,
+            bekciler: (kullanim <= 2)
+                ? turBasiStatlari.bekciler + 5
+                : turBasiStatlari.bekciler,
+            diplomasi: (kullanim <= 2)
+                ? turBasiStatlari.diplomasi - 10
+                : turBasiStatlari.diplomasi,
           );
           break;
         case GucTipi.ordu:
-          // Söndürme [cite: 474]
+          // Söndürme
           double temelEtki = (turBasiStatlari.bekciler * 0.7) +
               (_random.nextInt(15) + 15) +
               teknolojiBonusu;
-          basarili = (_random.nextInt(100) < ORDU_BASARI_SANSI);
-          sondurmeMiktari = basarili ? temelEtki : temelEtki * BASARISIZLIK_CARPANI; [cite: 482]
-          // Yan Etki [cite: 484-490]
+          basarili = (_random.nextInt(100) < orduBasariSansi); // lowerCamelCase
+          sondurmeMiktari = basarili
+              ? temelEtki
+              : temelEtki * basarisizlikCarpani; // lowerCamelCase
+          // Yan Etki
           turBasiStatlari = turBasiStatlari.copyWith(
-            hazine: turBasiStatlari.hazine - ORDU_MALIYETI,
-            bekciler: (kullanim == 2 || kullanim == 3) ? turBasiStatlari.bekciler - 5 : turBasiStatlari.bekciler,
+            hazine: turBasiStatlari.hazine - orduMaliyeti, // lowerCamelCase
+            bekciler: (kullanim == 2 || kullanim == 3)
+                ? turBasiStatlari.bekciler - 5
+                : turBasiStatlari.bekciler,
           );
           break;
         case GucTipi.halk:
-          // Söndürme [cite: 531]
+          // Söndürme
           double temelEtki = (turBasiStatlari.halk * 0.5) +
               (_random.nextInt(10) + 5) +
               teknolojiBonusu;
-          basarili = (_random.nextInt(100) < HALK_BASARI_SANSI);
-          sondurmeMiktari = basarili ? temelEtki : temelEtki * BASARISIZLIK_CARPANI; [cite: 540]
-          // Yan Etki [cite: 542-554]
+          basarili = (_random.nextInt(100) < halkBasariSansi); // lowerCamelCase
+          sondurmeMiktari = basarili
+              ? temelEtki
+              : temelEtki * basarisizlikCarpani; // lowerCamelCase
+          // Yan Etki
           if (kullanim % 2 == 0) {
             turBasiStatlari = turBasiStatlari.copyWith(
               halk: turBasiStatlari.halk + 5,
@@ -260,18 +269,23 @@ class PazarYanginiProvider extends ChangeNotifier {
           }
           break;
         case GucTipi.buyucu:
-          // Söndürme [cite: 583]
+          // Söndürme
           double temelEtki = (turBasiStatlari.golge * 1.3) + // Büyücü puanı
               (_random.nextInt(20) + 35) +
               teknolojiBonusu;
-          basarili = (_random.nextInt(100) < BUYUCU_BASARI_SANSI);
-          sondurmeMiktari = basarili ? temelEtki : temelEtki * 0.5; // GDD'de %50 diyor [cite: 591]
-          // Yan Etki [cite: 593-597]
+          basarili =
+              (_random.nextInt(100) < buyucuBasariSansi); // lowerCamelCase
+          sondurmeMiktari = basarili ? temelEtki : temelEtki * 0.5;
+          // Yan Etki
           turBasiStatlari = turBasiStatlari.copyWith(
-            hazine: turBasiStatlari.hazine - BUYUCU_MALIYETI,
+            hazine: turBasiStatlari.hazine - buyucuMaliyeti, // lowerCamelCase
             din: turBasiStatlari.din + 10,
-            diplomasi: (kullanim <= 2) ? turBasiStatlari.diplomasi - 5 : turBasiStatlari.diplomasi,
-            bekciler: (kullanim <= 2) ? turBasiStatlari.bekciler - 5 : turBasiStatlari.bekciler,
+            diplomasi: (kullanim <= 2)
+                ? turBasiStatlari.diplomasi - 5
+                : turBasiStatlari.diplomasi,
+            bekciler: (kullanim <= 2)
+                ? turBasiStatlari.bekciler - 5
+                : turBasiStatlari.bekciler,
           );
           break;
         default:
@@ -288,19 +302,19 @@ class PazarYanginiProvider extends ChangeNotifier {
         return;
       }
 
-      // Tehlike Çarpanı [cite: 359-361]
+      // Tehlike Çarpanı
       double tehlikeCarpani = 1.0;
-      if (bolge.mudaleEdilmedi) { 
+      if (bolge.mudaleEdilmedi) {
         // 2 tur üst üste müdahale edilmediyse
         tehlikeCarpani = 1.5;
       }
 
-      // Yangın Artış Formülü [cite: 332]
+      // Yangın Artış Formülü
       double yanginArtisi = _zorluk.temelArtis *
           ruzgarFaktoru *
           bolge.bolgeCarpan *
           tehlikeCarpani;
-      
+
       artisEtkileri[bolgeId] = yanginArtisi;
       bolge.mudaleEdilmedi = true; // Bir sonraki tur için işaretle
     });
@@ -312,27 +326,30 @@ class PazarYanginiProvider extends ChangeNotifier {
       bolge.yanginSeviyesi = (bolge.yanginSeviyesi - sondurme + artis);
     });
 
-    // --- 4. KOMŞU YAYILMASI HESAPLAMA [cite: 313] ---
+    // --- 4. KOMŞU YAYILMASI HESAPLAMA ---
     final pazar = _bolgeler['1']!;
-    bool pazarYayiyor = pazar.yanginSeviyesi > YAYILMA_ESIGI &&
-        (_secimler['1'] ?? GucTipi.atla) == GucTipi.atla; // [cite: 223]
+    bool pazarYayiyor = pazar.yanginSeviyesi > yayilmaEsigi && // lowerCamelCase
+        (_secimler['1'] ?? GucTipi.atla) == GucTipi.atla;
 
     _bolgeler.forEach((bolgeId, bolge) {
-      if (bolge.yanginSeviyesi > YAYILMA_ESIGI &&
+      if (bolge.yanginSeviyesi > yayilmaEsigi && // lowerCamelCase
           (_secimler[bolgeId] ?? GucTipi.atla) == GucTipi.atla) {
         for (var komsiId in bolge.komsular) {
-          yayilmaEtkileri[komsiId] = (yayilmaEtkileri[komsiId] ?? 0) + KOMSU_YAYILMA_MIKTARI;
+          yayilmaEtkileri[komsiId] = (yayilmaEtkileri[komsiId] ?? 0) +
+              komsuYayilmaMiktari; // lowerCamelCase
         }
       }
       if (pazarYayiyor && bolgeId != '1') {
-        yayilmaEtkileri[bolgeId] = (yayilmaEtkileri[bolgeId] ?? 0) + PAZAR_YAYILMA_MIKTARI; // [cite: 224]
+        yayilmaEtkileri[bolgeId] = (yayilmaEtkileri[bolgeId] ?? 0) +
+            pazarYayilmaMiktari; // lowerCamelCase
       }
     });
 
     // --- 5. YAYILMAYI UYGULAMA ve Clamp ---
     _bolgeler.forEach((bolgeId, bolge) {
       double yayilma = yayilmaEtkileri[bolgeId] ?? 0;
-      bolge.yanginSeviyesi = (bolge.yanginSeviyesi + yayilma).clamp(0, double.infinity);
+      bolge.yanginSeviyesi =
+          (bolge.yanginSeviyesi + yayilma).clamp(0, double.infinity);
     });
 
     // --- 6. TURU BİTİRME ---
@@ -354,61 +371,61 @@ class PazarYanginiProvider extends ChangeNotifier {
     String baslik, aciklama;
     MiniGameSonucTipi tip;
 
-    // Özel Felaket Kontrolü [cite: 869]
+    // Özel Felaket Kontrolü
     if (_bolgeler['5']!.yanginSeviyesi >= 250) {
       tip = MiniGameSonucTipi.felaket;
       baslik = 'FELAKET!';
       aciklama = 'Eski Tapınak çöktü! Gölgeler serbest kaldı.';
       finalStats = finalStats.copyWith(
-        halk: finalStats.halk - 20, // [cite: 875]
-        din: finalStats.din - 15, // [cite: 876]
-        golgeDeposu: finalStats.golgeDeposu + 10, // [cite: 877]
+        halk: finalStats.halk - 20,
+        din: finalStats.din - 15,
+        golgeDeposu: finalStats.golgeDeposu + 10,
       );
     }
-    // Başarısızlık Kontrolü [cite: 814]
+    // Başarısızlık Kontrolü
     else if (sonToplamYangin > _zorluk.kismiBasariHedef) {
       tip = MiniGameSonucTipi.basarisizlik;
       baslik = 'BAŞARISIZLIK';
       aciklama = 'Pazar tamamen yok oldu. Halk öfkeli.';
       finalStats = finalStats.copyWith(
-        halk: finalStats.halk - 30, // [cite: 860]
-        hazine: finalStats.hazine - 1500, // [cite: 861]
-        bekciler: finalStats.bekciler - 15, // [cite: 862]
-        diplomasi: finalStats.diplomasi - 20, // [cite: 863]
+        halk: finalStats.halk - 30,
+        hazine: finalStats.hazine - 1500,
+        bekciler: finalStats.bekciler - 15,
+        diplomasi: finalStats.diplomasi - 20,
       );
     }
-    // Kısmi Başarı Kontrolü [cite: 814]
+    // Kısmi Başarı Kontrolü
     else if (sonToplamYangin > _zorluk.tamBasariHedef) {
       tip = MiniGameSonucTipi.kismiBasari;
       baslik = 'KISMİ BAŞARI';
       aciklama = 'Pazar zarar gördü ama kurtarıldı.';
       finalStats = finalStats.copyWith(
-        halk: finalStats.halk + 10, // [cite: 843]
-        hazine: finalStats.hazine - 300, // [cite: 844]
-        diplomasi: finalStats.diplomasi + 5, // [cite: 845]
+        halk: finalStats.halk + 10,
+        hazine: finalStats.hazine - 300,
+        diplomasi: finalStats.diplomasi + 5,
       );
     }
-    // Tam Başarı [cite: 814]
+    // Tam Başarı
     else {
       tip = MiniGameSonucTipi.tamBasari;
       baslik = 'TAM BAŞARI!';
       aciklama = 'Pazar tamamen kurtarıldı! Halk sizi kahraman ilan etti.';
       finalStats = finalStats.copyWith(
-        halk: finalStats.halk + 25, // [cite: 826]
-        hazine: finalStats.hazine + 500, // [cite: 827]
-        diplomasi: finalStats.diplomasi + 15, // [cite: 828]
-        bekciler: finalStats.bekciler + 10, // [cite: 829]
-        golge: finalStats.golge + 10, // Büyücü [cite: 829]
+        halk: finalStats.halk + 25,
+        hazine: finalStats.hazine + 500,
+        diplomasi: finalStats.diplomasi + 15,
+        bekciler: finalStats.bekciler + 10,
+        golge: finalStats.golge + 10, // Büyücü
       );
     }
-    
-    // GDD Din 60+ Eşiği [cite: 599-604]
+
+    // GDD Din 60+ Eşiği
     if (finalStats.din >= 60) {
       int halkCezasi = ((finalStats.din - 60) / 5).floor() * -5;
       finalStats = finalStats.copyWith(halk: finalStats.halk + halkCezasi);
     }
 
-    // GDD Gölge Deposu 70+ Eşiği [cite: 423-424] (Tur başına idi, bunu ana oyunda uygulamak gerekebilir)
+    // GDD Gölge Deposu 70+ Eşiği (Tur başına idi, bunu ana oyunda uygulamak gerekebilir)
     // Şimdilik sadece sonucu sakla
     _sonuc = MiniGameSonuc(
       tip: tip,
