@@ -66,7 +66,7 @@ class PazarYanginiScreen extends StatelessWidget {
                 onPressed: () {
                   provider.turuBitir();
                 },
-                child: Text('TURU BİTİR'),
+                child: const Text('TURU BİTİR'),
               ),
             ],
           ),
@@ -118,7 +118,7 @@ class PazarYanginiScreen extends StatelessWidget {
                     // güncellenmiş statları ona yolla.
                     context.read<GameProvider>().endMiniGame(sonuc.finalStats);
                   },
-                  child: Text('Devam Et'),
+                  child: const Text('Devam Et'),
                 ),
               ],
             ),
