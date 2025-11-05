@@ -27,9 +27,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kader Şehri',
       theme: ThemeData(
-          // ... (tema ayarlarınız) ...
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.transparent,
+        textTheme: GoogleFonts.cinzelDecorativeTextTheme(
+          // Google Fonts'u burada yüklüyoruz
+          Theme.of(context).textTheme.apply(bodyColor: Colors.white),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white.withOpacity(0.1),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+              side: BorderSide(color: Colors.white.withOpacity(0.5)),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-      home: Scaffold(
+        ),
+      ),
+      home: const Scaffold(
         body: GameWidget.controlled(
           gameFactory: AtmosphereGame.new,
           overlayBuilderMap: {
@@ -37,7 +53,7 @@ class MyApp extends StatelessWidget {
             // GÜNCELLEME: 'PazarYangini' overlay'i artık kendi Provider'ını oluşturacak
             'PazarYangini': _buildPazarYanginiUI,
           },
-          initialActiveOverlays: const ['GameUI'],
+          initialActiveOverlays: ['GameUI'],
         ),
       ),
     );
