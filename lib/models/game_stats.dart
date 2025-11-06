@@ -11,23 +11,22 @@ class GameStats {
   final int teknoloji;
   final int diplomasi;
   final int din;
-  // Not: GDD Büyücü (40) ve Din (25) ayrı diyor ama [cite: 121] birleşik de olabileceğini belirtiyor.
+  // Not: GDD Büyücü (40) ve Din (25) ayrı diyor ama birleşik de olabileceğini belirtiyor.
   // Şimdilik Büyücü'yü 'golge' (eski) parametresiyle, Din'i 'din' ile yönetelim.
 
   GameStats({
     // Eski Başlangıçlar
-    this.halk = 50,
-    this.hazine = 2000, // GDD'ye göre başlangıç 2000 [cite: 47]
-    this.bekciler = 50, // GDD'de 'Ordu' [cite: 79]
+    this.halk = 30,
+    this.hazine = 1500, // GÜNCELLENDİ: 2000 -> 1500
+    this.bekciler = 30, // GDD'de 'Ordu'
 
     // GDD'den Yeni Başlangıçlar
-    this.golgeDeposu = 10, // [cite: 68]
-    this.teknoloji =
-        50, // GDD 0 veya 50 diyor [cite: 96], 50 seçelim [cite: 164]
-    this.diplomasi = 50, // [cite: 108]
-    this.din = 25, // [cite: 123]
+    this.golgeDeposu = 10,
+    this.teknoloji = 50,
+    this.diplomasi = 50,
+    this.din = 25,
     this.golge =
-        40, // Eski 'golge' parametresini 'Büyücü' gücü (40) [cite: 123] olarak kullanalım
+        40, // Eski 'golge' parametresini 'Büyücü' gücü (40) olarak kullanalım
   });
 
   // Kopyalama metodu (Tüm yeni parametreleri içerecek şekilde güncellendi)

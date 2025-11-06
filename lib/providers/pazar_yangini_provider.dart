@@ -3,7 +3,7 @@ import 'package:hyper_casual/models/game_stats.dart';
 import 'package:hyper_casual/models/mini_games/bolge_model.dart';
 import 'package:hyper_casual/models/mini_games/zorluk_model.dart';
 import 'package:hyper_casual/models/mini_games/guc_secimi_model.dart';
-import 'dart:math'; // HATA 1: dart.math -> dart:math olarak düzeltildi
+import 'dart:math';
 
 // Mini oyunun sonucunu tanımlayan bir enum
 enum MiniGameSonucTipi { tamBasari, kismiBasari, basarisizlik, felaket }
@@ -29,7 +29,7 @@ class PazarYanginiProvider extends ChangeNotifier {
   int _mevcutTur = 1;
   Map<String, MiniGameBolge> _bolgeler = {};
   double _miniGameGolgeGucu = 0;
-  final Random _random = Random(); // HATA 2 & 3: Artık 'Random' tanınıyor
+  final Random _random = Random();
 
   Map<String, GucTipi> _secimler = {};
   final Map<GucTipi, int> _kullanimSayaclari = {
@@ -38,6 +38,9 @@ class PazarYanginiProvider extends ChangeNotifier {
     GucTipi.halk: 0,
     GucTipi.buyucu: 0,
   };
+
+  // YENİ: Ordu kullanım limitini takip etmek için
+  int _orduKullanilanBuTur = 0;
 
   MiniGameSonuc? _sonuc; // Mini oyun bittiğinde bu dolar
   bool get isMiniGameOver => _sonuc != null;
@@ -53,17 +56,22 @@ class PazarYanginiProvider extends ChangeNotifier {
       _bolgeler.values.fold(0.0, (prev, e) => prev + e.yanginSeviyesi);
   Map<String, GucTipi> get secimler => _secimler;
 
-  // --- GDD SABİTLERİ (HATA 12-23: lowerCamelCase olarak düzeltildi) ---
+  // YENİ: Ordu limiti için getter'lar
+  int get orduKullanilanBuTur => _orduKullanilanBuTur;
+  int get maxOrduKullanimi =>
+      (_anaStats.bekciler / 10).floor(); // Ordu Puanı / 10
+
+  // --- GDD SABİTLERİ (GÜNCELLENDİ) ---
   // Maliyetler
   final int golgeMaliyeti = 50;
-  final int orduMaliyeti = 200;
-  final int buyucuMaliyeti = 400;
+  final int orduMaliyeti = 100; // GÜNCELLENDİ: 200 -> 100
+  final int buyucuMaliyeti = 300; // GÜNCELLENDİ: 400 -> 300
   final int halkGerekliStat = 30;
 
   // Başarı Şansları
   final int golgeBasariSansi = 100;
   final int orduBasariSansi = 90;
-  final int halkBasariSansi = 70;
+  final int halkBasariSansi = 50; // GÜNCELLENDİ: 70 -> 50
   final int buyucuBasariSansi = 95;
 
   // Diğer
@@ -154,6 +162,7 @@ class PazarYanginiProvider extends ChangeNotifier {
     _secimler = {};
     _sonuc = null;
     _kullanimSayaclari.updateAll((key, value) => 0);
+    _orduKullanilanBuTur = 0; // YENİ: Ordu sayacını sıfırla
 
     double oyuncuGucu = (anaStats.halk +
             anaStats.bekciler +
@@ -187,7 +196,19 @@ class PazarYanginiProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // YENİ: Ordu sayacını güncellemek için gucAta değiştirildi
   void gucAta(String bolgeId, GucTipi guc) {
+    final eskiSecim = _secimler[bolgeId];
+
+    // Eğer eski seçim Ordu ise ve yeni seçim farklıysa, sayacı azalt
+    if (eskiSecim == GucTipi.ordu && guc != GucTipi.ordu) {
+      _orduKullanilanBuTur--;
+    }
+    // Eğer yeni seçim Ordu ise ve eski seçim Ordu değilse, sayacı artır
+    else if (guc == GucTipi.ordu && eskiSecim != GucTipi.ordu) {
+      _orduKullanilanBuTur++;
+    }
+
     _secimler[bolgeId] = guc;
     notifyListeners();
   }
@@ -200,7 +221,6 @@ class PazarYanginiProvider extends ChangeNotifier {
     Map<String, double> sondurmeEtkileri = {};
     Map<String, double> artisEtkileri = {};
     Map<String, double> yayilmaEtkileri = {};
-    // HATA 11: 'hikayeLoglari' kaldırıldı (unused)
 
     double teknolojiBonusu = turBasiStatlari.teknoloji * 0.20;
     double ruzgarFaktoru = _random.nextDouble() * (1.15 - 0.85) + 0.85;
@@ -217,10 +237,8 @@ class PazarYanginiProvider extends ChangeNotifier {
 
       switch (guc) {
         case GucTipi.golge:
-          // Söndürme (HATA 4: min artık tanınıyor)
           sondurmeMiktari = min(200, bolge.yanginSeviyesi * 1.0);
-          _miniGameGolgeGucu -= golgeMaliyeti; // lowerCamelCase
-          // Yan Etki
+          _miniGameGolgeGucu -= golgeMaliyeti;
           turBasiStatlari = turBasiStatlari.copyWith(
             golgeDeposu: turBasiStatlari.golgeDeposu + 5,
             halk: (kullanim <= 2)
@@ -235,32 +253,26 @@ class PazarYanginiProvider extends ChangeNotifier {
           );
           break;
         case GucTipi.ordu:
-          // Söndürme
           double temelEtki = (turBasiStatlari.bekciler * 0.7) +
               (_random.nextInt(15) + 15) +
               teknolojiBonusu;
-          basarili = (_random.nextInt(100) < orduBasariSansi); // lowerCamelCase
-          sondurmeMiktari = basarili
-              ? temelEtki
-              : temelEtki * basarisizlikCarpani; // lowerCamelCase
-          // Yan Etki
+          basarili = (_random.nextInt(100) < orduBasariSansi);
+          sondurmeMiktari =
+              basarili ? temelEtki : temelEtki * basarisizlikCarpani;
           turBasiStatlari = turBasiStatlari.copyWith(
-            hazine: turBasiStatlari.hazine - orduMaliyeti, // lowerCamelCase
+            hazine: turBasiStatlari.hazine - orduMaliyeti, // GÜNCELLENDİ
             bekciler: (kullanim == 2 || kullanim == 3)
                 ? turBasiStatlari.bekciler - 5
                 : turBasiStatlari.bekciler,
           );
           break;
         case GucTipi.halk:
-          // Söndürme
           double temelEtki = (turBasiStatlari.halk * 0.5) +
               (_random.nextInt(10) + 5) +
               teknolojiBonusu;
-          basarili = (_random.nextInt(100) < halkBasariSansi); // lowerCamelCase
-          sondurmeMiktari = basarili
-              ? temelEtki
-              : temelEtki * basarisizlikCarpani; // lowerCamelCase
-          // Yan Etki
+          basarili = (_random.nextInt(100) < halkBasariSansi); // GÜNCELLENDİ
+          sondurmeMiktari =
+              basarili ? temelEtki : temelEtki * basarisizlikCarpani;
           if (kullanim % 2 == 0) {
             turBasiStatlari = turBasiStatlari.copyWith(
               halk: turBasiStatlari.halk + 5,
@@ -269,16 +281,13 @@ class PazarYanginiProvider extends ChangeNotifier {
           }
           break;
         case GucTipi.buyucu:
-          // Söndürme
           double temelEtki = (turBasiStatlari.golge * 1.3) + // Büyücü puanı
               (_random.nextInt(20) + 35) +
               teknolojiBonusu;
-          basarili =
-              (_random.nextInt(100) < buyucuBasariSansi); // lowerCamelCase
+          basarili = (_random.nextInt(100) < buyucuBasariSansi);
           sondurmeMiktari = basarili ? temelEtki : temelEtki * 0.5;
-          // Yan Etki
           turBasiStatlari = turBasiStatlari.copyWith(
-            hazine: turBasiStatlari.hazine - buyucuMaliyeti, // lowerCamelCase
+            hazine: turBasiStatlari.hazine - buyucuMaliyeti, // GÜNCELLENDİ
             din: turBasiStatlari.din + 10,
             diplomasi: (kullanim <= 2)
                 ? turBasiStatlari.diplomasi - 5
@@ -301,22 +310,17 @@ class PazarYanginiProvider extends ChangeNotifier {
         bolge.mudaleEdilmedi = false; // Müdahale edildi
         return;
       }
-
-      // Tehlike Çarpanı
       double tehlikeCarpani = 1.0;
       if (bolge.mudaleEdilmedi) {
-        // 2 tur üst üste müdahale edilmediyse
         tehlikeCarpani = 1.5;
       }
-
-      // Yangın Artış Formülü
       double yanginArtisi = _zorluk.temelArtis *
           ruzgarFaktoru *
           bolge.bolgeCarpan *
           tehlikeCarpani;
 
       artisEtkileri[bolgeId] = yanginArtisi;
-      bolge.mudaleEdilmedi = true; // Bir sonraki tur için işaretle
+      bolge.mudaleEdilmedi = true;
     });
 
     // --- 3. YANGINLARI GÜNCELLEME (Söndürme ve Artış) ---
@@ -328,20 +332,20 @@ class PazarYanginiProvider extends ChangeNotifier {
 
     // --- 4. KOMŞU YAYILMASI HESAPLAMA ---
     final pazar = _bolgeler['1']!;
-    bool pazarYayiyor = pazar.yanginSeviyesi > yayilmaEsigi && // lowerCamelCase
+    bool pazarYayiyor = pazar.yanginSeviyesi > yayilmaEsigi &&
         (_secimler['1'] ?? GucTipi.atla) == GucTipi.atla;
 
     _bolgeler.forEach((bolgeId, bolge) {
-      if (bolge.yanginSeviyesi > yayilmaEsigi && // lowerCamelCase
+      if (bolge.yanginSeviyesi > yayilmaEsigi &&
           (_secimler[bolgeId] ?? GucTipi.atla) == GucTipi.atla) {
         for (var komsiId in bolge.komsular) {
-          yayilmaEtkileri[komsiId] = (yayilmaEtkileri[komsiId] ?? 0) +
-              komsuYayilmaMiktari; // lowerCamelCase
+          yayilmaEtkileri[komsiId] =
+              (yayilmaEtkileri[komsiId] ?? 0) + komsuYayilmaMiktari;
         }
       }
       if (pazarYayiyor && bolgeId != '1') {
-        yayilmaEtkileri[bolgeId] = (yayilmaEtkileri[bolgeId] ?? 0) +
-            pazarYayilmaMiktari; // lowerCamelCase
+        yayilmaEtkileri[bolgeId] =
+            (yayilmaEtkileri[bolgeId] ?? 0) + pazarYayilmaMiktari;
       }
     });
 
@@ -356,6 +360,7 @@ class PazarYanginiProvider extends ChangeNotifier {
     _anaStats = turBasiStatlari; // Statları GÜNCELLE
     _mevcutTur++;
     _secimler = {};
+    _orduKullanilanBuTur = 0; // YENİ: Ordu sayacını sıfırla
 
     // --- 7. OYUN BİTTİ Mİ KONTROLÜ ---
     if (_mevcutTur > _zorluk.turSayisi) {
@@ -425,8 +430,6 @@ class PazarYanginiProvider extends ChangeNotifier {
       finalStats = finalStats.copyWith(halk: finalStats.halk + halkCezasi);
     }
 
-    // GDD Gölge Deposu 70+ Eşiği (Tur başına idi, bunu ana oyunda uygulamak gerekebilir)
-    // Şimdilik sadece sonucu sakla
     _sonuc = MiniGameSonuc(
       tip: tip,
       baslik: baslik,
