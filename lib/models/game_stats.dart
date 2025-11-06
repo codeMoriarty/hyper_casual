@@ -16,7 +16,7 @@ class GameStats {
 
   GameStats({
     // Eski Başlangıçlar
-    this.halk = 30,
+    this.halk = 45,
     this.hazine = 1500, // GÜNCELLENDİ: 2000 -> 1500
     this.bekciler = 30, // GDD'de 'Ordu'
 
